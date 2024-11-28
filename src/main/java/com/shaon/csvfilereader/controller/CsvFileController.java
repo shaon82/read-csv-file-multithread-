@@ -1,6 +1,7 @@
 package com.shaon.csvfilereader.controller;
 
 import com.shaon.csvfilereader.service.CsvService;
+import com.shaon.csvfilereader.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,20 +14,16 @@ import java.io.IOException;
 @RestController
 public class CsvFileController {
 
-    public CsvFileController(CsvService csvService) {
-        this.csvService = csvService;
+    private final UserService userService;
+
+    public CsvFileController(UserService userService) {
+        this.userService = userService;
     }
 
-    private final CsvService csvService;
-
-
-
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadCsv(@RequestParam("file") MultipartFile file) throws IOException {
-        File tempFile = File.createTempFile("upload", ".csv");
-        file.transferTo(tempFile);
+    public ResponseEntity<String> uploadCsv(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
-        csvService.processCsv(tempFile);
+        userService.createUserByCsvFile(multipartFile);
 
         return ResponseEntity.ok("File processing started!");
     }
